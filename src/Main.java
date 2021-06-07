@@ -16,7 +16,7 @@ public class Main {
         // Om dit te doen hebben we enkel nog een constructor nodig waarin we een URL object kunnen meegeven
 
         try {
-            URL url = new URL("https://api.openweathermap.org/data/2.5/weather?q=Den+Helder&appid=" + apiKey);
+            URL url = new URL("https://api.openweathermap.org/data/2.5/weather?q=Den+Hulder&appid=" + apiKey);
             System.out.println(url);
             weerData ht = new weerData(url);
             ht.httpConnect();

@@ -1,4 +1,5 @@
 import java.net.URL;
+import java.util.Scanner;
 
 public class Main {
 
@@ -8,18 +9,30 @@ public class Main {
 
     public static void main(String[] args) {
 
-        //stap 2 Ik kan de complete code in de Main class gaan schrijven, maar dan wordt de code erg lang en
-        // bovendien wil ik bepaalde taken concentreren in aparte objecten die ik wil aanmaken. Ik wil daarom een class aanmaken
-        // waarmee ik een api kan aanroepen, door een URL object mee te geven als methode. Ik maak de file weerData.java aan.
-        // Daarin maken we een private field voor een URL en die zetten we op null. Private is om hem af te schermen van buiten de class.
-        // Dit field is nu leeg en kunnen we vullen met ons URL object zodra we een weerData object aanmaken.
-        // Om dit te doen hebben we enkel nog een constructor nodig waarin we een URL object kunnen meegeven
+        //In deze string gaat de JSON
+        String antwoord = "";
+        String plaats = "";
+        String stad = "Den+Bosch";
+
+        System.out.println("Voer je plaats in: ");
+        Scanner invoer = new Scanner(System.in);
+        String input = invoer.nextLine();
+        if (input.isEmpty()){
+            input = stad;
+        }
+
+        plaats = input.replaceAll(" ", "+").toLowerCase();
 
         try {
-            URL url = new URL("https://api.openweathermap.org/data/2.5/weather?q=Den+Hulder&appid=" + apiKey);
+            URL url = new URL("https://api.openweathermap.org/data/2.5/weather?q=" + plaats + "&appid=" + apiKey);
             System.out.println(url);
             weerData ht = new weerData(url);
-            ht.httpConnect();
+            String jsonAntwoord = ht.httpConnect();
+
+            //hier wordt het allerlaatste karakter eraf gehaald
+            antwoord = jsonAntwoord.substring(0,(jsonAntwoord.length()-1));
+            System.out.println("geknipt antwoord : " + antwoord);
+
         } catch (Exception e) {
             System.out.println("Weer opvragen mislukt");
         } finally {

@@ -50,7 +50,7 @@ public class weerData{
             //zolang er een getal groter dan nul uit de inputstream in de integer 'rint' gezet kan worden, blijf hetvolgende doen
             while (leesGetal > 0) {
                 //hier laat je het getal dat binnenkomt uit de printen
-                System.out.println("het getal : " + leesGetal);
+//                System.out.println("het getal : " + leesGetal);
 
                 //hier laat je de inputstream met methode read() het character-integer uitlezen en in de integer rint zetten
                 leesGetal = antwoord.read();

@@ -31,7 +31,10 @@ public class Main {
 
             //hier wordt het allerlaatste karakter eraf gehaald
             antwoord = jsonAntwoord.substring(0,(jsonAntwoord.length()-1));
-            System.out.println("geknipt antwoord : " + antwoord);
+
+            //nieuw printer object instantiëren
+            weerDataPrinter printer = new weerDataPrinter();
+            printer.getData(antwoord);
 
         } catch (Exception e) {
             System.out.println("Weer opvragen mislukt");

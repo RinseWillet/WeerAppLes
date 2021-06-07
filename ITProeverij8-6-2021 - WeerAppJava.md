@@ -209,7 +209,7 @@ import java.util.Scanner;
     plaats = input;
 
 ```
-Dit lijkt te werken, maar wat nou als iemand bij ongeluk op enter drukt zonder een plaats in te voeren? Om dat te voorkomen heb ik een default stad ingevoerd (nl. Den Bosch) en een if statement toegevoegd om te checken of de gebruikersinput leeg is
+Dit lijkt te werken, maar wat nou als iemand bij ongeluk op enter drukt zonder een plaats in te voeren? Om dat te voorkomen heb ik een default stad ingevoerd (nl. Den Bosch) en een if statement toegevoegd om te checken of de gebruikersinput leeg is.
 
 ```
 String stad = "Den+Bosch";
@@ -226,4 +226,53 @@ plaats = input.replaceAll(" ", "+").toLowerCase();
 ```
 
 # Stap 5
+
+We krijgen nu weerdata binnen van de plaats die wij willen. Maar het antwoord dat we krijgen is natuurlijk lastig leesbaar. Buiten replit bestaan er allerlei libraries die je in Java heel makkelijk kunt toepassen om deze JSON string te parsen zodat je kunt zoeken op bepaalde data (bijv. temperatuur) en daar de waarde bij krijgen. Voorbeelden van zulke libraries zijn Jackson (https://www.baeldung.com/jackson-object-mapper-tutorial), org.simple, org.json.simple (https://www.baeldung.com/java-org-json) en nog anderen. Het probleem is dat deze niet in Replit werken en dus moeten we zelf handmatig de string gaan proberen te parsen. Ga je zelf in IntelliJ, Eclipse of andere IDE aan de gang, dan zou ik zeker het gemak van deze libraries gebruiken! Wij moeten dus zelf aan de slag, maar dat laat ons wel heel wat functies van String in Java kennen. Om te beginnen is het afdrukken van de data in de console wel een hele eigen functie en eigen entiteit. Hier moet dus ook een aparte classe voor worden aangemaakt, waarmee je een printend object kunt instantiëren m.b.v. het antwoord dat we uit het weerData object hebben gekregen. Hierin moet een methode komen die in het object aan te roepen is om de data te gaan printen.
+```
+//nieuwe file weerDataPrinter.java
+
+public class weerDataPrinter {
+    public void getData(String antwoord) {
+        System.out.println("printen maar");
+        System.out.println(antwoord);
+    } 
+}
+
+// en in de Main.java, in het try block
+
+weerDataPrinter printer = new weerDataPrinter();
+printer.getData(antwoord);
+```
+
+We kunnen de string dus doorgeven aan het printer object met de getData methode. Nu moeten we gaan kijken om de leesbaarheid te verbeteren. Als eerste kunnen we de plaatsnaam uit het antwoord peuteren. We gaan dit doen door gebruik te maken van de substring methode en de indexOf methode. Bij de substring methode geef je het begin indexgetal aan (vanaf) en het eind indexgetal (tot waar) binnen een string en knipt daar een nieuwe string van. We gaan die methode inzetten om zo de waarden van bepaalde data uit te knippen. Je zou dit kunnen doen als volgt:
+```
+/// bij The Hague
+String voorbeeld = antwoord.substring(67,72);
+System.out.println(voorbeeld);
+// geeft Clear
+```
+Dit werkt wel, maar is erg onhandig, en bovendien kun je al je indexgetallen gaan aanpassen als de beschrijving langer of korter is. Maar wat we wel zien is dat de beschrijving van weertype na de eerste "main" komt in de JSON en dat de plaatsnaam bijvoorbeeld na "name" komt. Laten we proberen de plaatsnaam uit de JSON te peuteren. We kunnen dus vragen of ze van die keywords een index getal kunnen geven. En met indexOf("name") wordt het indexgetal in de String gegeven waar "name" begint.
+```
+int voorbeeld2 = antwoord.indexOf("name");
+System.out.println(voorbeeld2);
+```
+En dit kunnen we combineren:
+```
+String voorbeeld3 = antwoord.substring(antwoord.indexOf("name"), antwoord.indexOf("name")+18);
+System.out.println(voorbeeld3);
+```
+en ook dit werkt ten dele en je komt in de problemen zodra de plaatsnaam korter of langer wordt. Je moet eigenlijk de substring laten lopen tot de komma die het volgende label aankondigt in de JSON string. En het gave van indexOf is dat je niet alleen de String kunt meegeven ("name") maar ook vanaf waar in de String die moet zoeken. We zien in het JSON antwoord dat de plaatsnaam tussen "" staat, en dat er na de laatste " een , volgt, en daarna een nieuw label dat ook met een " begint. Eigenlijk moeten we dus zoeken voor het eind-indexgetal voor het begin indexgetal van ",". En de indexOf van deze draad aan tekens moet gevonden worden, direct na "name". Dit kun je als volgt doen:
+```
+String voorbeeld4 = antwoord.substring(antwoord.indexOf("name")+7, antwoord.indexOf("\",\"",antwoord.indexOf("name")));
+System.out.println(voorbeeld4);
+```
+En nu zie je dat de lengte van de plaatsnaam niet uitmaakt, er wordt altijd de volledige naam uit het JSON antwoord gehaald. Met deze techniek kunnen nu ook vrij eenvoudig het weertype (dat na "main" staat) en de beschrijving (dat na "description" staat) uit de JSON halen:
+```
+String plaatsRes = antwoord.substring(antwoord.indexOf("name")+7, antwoord.indexOf("\",\"",antwoord.indexOf("name")));
+String weerTypeRes = antwoord.substring(antwoord.indexOf("main")+7, antwoord.indexOf("\",\"",antwoord.indexOf("main")));
+String beschrijvingRes = antwoord.substring(antwoord.indexOf("description")+14, antwoord.indexOf("\",\"",antwoord.indexOf("description")));
+```
+We hebben nu de plaatsnaam en weertype en de beschrijving uit de JSON halen en in losse Strings stoppen (in het Engels helaas).
+
+# Stap 6
 

@@ -276,3 +276,56 @@ We hebben nu de plaatsnaam en weertype en de beschrijving uit de JSON halen en i
 
 # Stap 6
 
+Nu gaan we de andere data uitlezen, te beginnen met de temperatuur en de min. en max., daarna de luchtdruk, en vervolgend de vochtigheid. We kunnen eigenlijk dezelfde techniek als voor de plaatsnaam etc. gebruiken. Alleen moeten we nu getallen (hele en kommagetallen) uit de JSON halen. de temperatuur is een kommagetal, en je kunt in Java kommagetallen gebruiken als Float of Double. Hier gebruiken we de double, en we moeten dus de "Double waarde" van een specifiek stukje string uit de JSON halen. Dit doe je met Double.valueOf en de de substring en indexOf combinatie, alleen nu zoeken we naar het kopje "temp":
+```
+double tempKRes = Double.valueOf(antwoord.substring(antwoord.indexOf("temp")+6, antwoord.indexOf(",\"",antwoord.indexOf("temp"))));
+double tempCRes = tempKRes - 273.15;
+```
+Omdat de temperatuur hier in Kelvin (absolute temperatuur) en niet in Celsius gegeven wordt door de OpenWeatherMap api, moeten we er nog 273.15 van de temperatuur aftrekken. We kunnen nu hetzelfde doen voor de minimum ("temp_min") en maximum ("temp_max") temperaturen:
+```
+double tempKminRes = Double.valueOf(antwoord.substring(antwoord.indexOf("temp_min")+10, antwoord.indexOf(",\"",antwoord.indexOf("temp_min"))));
+double tempCminRes = tempKminRes - 273.15;
+
+double tempKmaxRes = Double.valueOf(antwoord.substring(antwoord.indexOf("temp_max")+10, antwoord.indexOf(",\"",antwoord.indexOf("temp_max"))));
+double tempCmaxRes = tempKmaxRes - 273.15;
+```
+Natuurlijk krijg je hier getallen op 2 decimalen achter de komma en dat is eigenlijk niet per se nodig voor een weerApp.
+En we kunnen dat format vrij eenvoudig aanpassen met de System.out.printf functie. In deze functie geef je eerst het format van de string aan, en dit doe je met codes achter het % teken, en vervolgens geef je de argumenten aan die volgens dat format geprint moeten worden (zie ook: https://www.cs.colostate.edu/~cs160/.Summer16/resources/Java_printf_method_quick_reference.pdf):
+```
+System.out.printf("Plaats : " + stadRes + " - weertype : " + weerTypeRes + " - beschrijving : " + beschrijvingRes);
+System.out.printf("\nTemperatuur : %.1f Min. : %.1f Max. : %.1f graden Celsius", tempCRes, tempCminRes, tempCmaxRes);
+```
+de %.1f geeft aan dat we 1f floating point number (double of float) na de komma willen hebben. We kunnen ook de luchtdruk (in hPa of mBar) uit het antwoord krijgen. Dit is altijd een integer (geen komma) in deze JSON:
+```
+int luchtdrukRes = Integer.valueOf(antwoord.substring(antwoord.indexOf("pressure")+10, antwoord.indexOf(",\"",antwoord.indexOf("pressure"))));
+```
+Vervolgens kunnen we de luchtvochtigheid (humidity) uit de JSON halen. En nu lopen we tegen een probleem aan, omdat voor de meeste steden er na de humidity een "," volgt met een nieuw label, maar voor andere steden volgt "} - en dan werkt onze truc niet meer. Wat we wel weten is dat de luchtvochtigheid een percentage is, en dat die dus uit 1, 2, of 3 getallen bestaat. Daarom kunnen we een stukje code schrijven die checkt of de humidity waarde uit 1, 2, of 3 getallen bestaat en vervolgens op basis daarvan een substring maakt vanaf de indexOf("humidity"). We doen dit in een if-statement (als iets zo is, dan) gecombineerd met een else if (anders als). En wat we gaan vragen in het if statement is of het karakter dat op een indexgetal na "humidity" een getal is. Dit doen we met Character.isDigit (is het karakter een getal):
+```
+System.out.println(Character.isDigit('1')); //print true
+System.out.println(Character.isDigit('q')); //print false
+```
+en om het specifieke karakter in het antwoord aan te wijzen gebruiken we de charAt methode.
+```
+System.out.println(antwoord.charAt(antwoord.indexOf("humidity")+10)); //gebruik ook + 0 en + 1 en + 11 en + 9;
+```
+en dan nu combineren of dat character een getal is of niet :
+```
+System.out.println(Character.isDigit(antwoord.charAt(antwoord.indexOf("humidity")+10)));
+```
+nu kunnen we deze vraag ingeven in een serie van if-statements, waarbij we vragen of het karakter op 12 plekjes na het begin "humidity" een getal is (dan heb je dus 100 als luchtvochtigheid), of op 11 plekjes (percentage 10-99) of op 10 plekjes (percentage 9 of lager). En als er uit deze if statements true is wil ik een substring maken van het eerste getal (+10) tot en met het indegetal waar het karakter nog een getal is:
+```
+int vochtigheidRes = 0;
+if(Character.isDigit(antwoord.charAt((antwoord.indexOf("humidity")+12)))) {
+    vochtigheidRes = Integer.valueOf(antwoord.substring(antwoord.indexOf("humidity") + 10, antwoord.indexOf("humidity") + 13));
+} else if (Character.isDigit(antwoord.charAt((antwoord.indexOf("humidity") + 11)))) {
+    vochtigheidRes = Integer.valueOf(antwoord.substring(antwoord.indexOf("humidity") + 10, antwoord.indexOf("humidity") + 12));
+} else {
+    vochtigheidRes = Integer.valueOf(antwoord.substring(antwoord.indexOf("humidity") + 10, antwoord.indexOf("humidity") + 11));//
+}
+```
+Als laatste ga ik de luchtdruk en de luchtvochtigheid ook printen:
+```
+System.out.printf("\nLuchtdruk : %4d hPa Luchtvochtigheid : %3d procent", luchtdrukRes, vochtigheidRes);
+```
+de %4d geeft aan dat het er tot 4 integers te verwachten zijn voor de luchtdruk, en de %3d tot 3 integers voor de luchtvochtigheid
+

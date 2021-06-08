@@ -26,11 +26,6 @@ public class weerDataPrinter {
         int luchtdrukRes = Integer.valueOf(antwoord.substring(antwoord.indexOf("pressure")+10, antwoord.indexOf(",\"",antwoord.indexOf("pressure"))));
 
         //luchtvochtigheid
-        System.out.println(Character.isDigit('1'));
-        System.out.println(Character.isDigit('q'));
-        System.out.println(antwoord.charAt(antwoord.indexOf("humidity")+10));
-        System.out.println(Character.isDigit(antwoord.charAt(antwoord.indexOf("humidity")+12)));
-
         int vochtigheidRes = 0;
         if(Character.isDigit(antwoord.charAt((antwoord.indexOf("humidity")+12)))) {
             vochtigheidRes = Integer.valueOf(antwoord.substring(antwoord.indexOf("humidity") + 10, antwoord.indexOf("humidity") + 13));

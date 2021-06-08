@@ -24,7 +24,7 @@ public class Main {
         plaats = input.replaceAll(" ", "+").toLowerCase();
 
         try {
-            URL url = new URL("https://api.openweathermap.org/data/2.5/weather?q=" + plaats + "&appid=" + apiKey);
+            URL url = new URL("https://api.openweathermap.org/data/2.5/weather?q=" + plaats + "&units=metric&appid=" + apiKey + "&lang=nl");
             weerData ht = new weerData(url);
             String jsonAntwoord = ht.httpConnect();
 

@@ -26,7 +26,7 @@ public class Main {
     static String apiKey = "apikey";
 
     public static void main(String[] args) {
-        URL url = new URL("https://api.openweathermap.org/data/2.5/weather?q=Den+Bosch&appid=" + apiKey)
+        URL url = new URL("https://api.openweathermap.org/data/2.5/weather?q=" + plaats + "&appid=" + apiKey + "&lang=nl")
         System.out.println(url);
     }
 }
@@ -270,36 +270,38 @@ en ook dit werkt ten dele en je komt in de problemen zodra de plaatsnaam korter 
 String voorbeeld4 = antwoord.substring(antwoord.indexOf("name")+7, antwoord.indexOf("\",\"",antwoord.indexOf("name")));
 System.out.println(voorbeeld4);
 ```
-En nu zie je dat de lengte van de plaatsnaam niet uitmaakt, er wordt altijd de volledige naam uit het JSON antwoord gehaald. Met deze techniek kunnen nu ook vrij eenvoudig het weertype (dat na "main" staat) en de beschrijving (dat na "description" staat) uit de JSON halen:
+En nu zie je dat de lengte van de plaatsnaam niet uitmaakt, er wordt altijd de volledige naam uit het JSON antwoord gehaald. Met deze techniek kunnen nu ook vrij eenvoudig de beschrijving (dat na "description" staat) uit de JSON halen:
+
 ```java
 String plaatsRes = antwoord.substring(antwoord.indexOf("name")+7, antwoord.indexOf("\",\"",antwoord.indexOf("name")));
-String weerTypeRes = antwoord.substring(antwoord.indexOf("main")+7, antwoord.indexOf("\",\"",antwoord.indexOf("main")));
+
 String beschrijvingRes = antwoord.substring(antwoord.indexOf("description")+14, antwoord.indexOf("\",\"",antwoord.indexOf("description")));
 ```
-We hebben nu de plaatsnaam en weertype en de beschrijving uit de JSON halen en in losse Strings stoppen (in het Engels helaas).
+We hebben nu de plaatsnaam en weertype en de beschrijving uit de JSON halen en in losse Strings stoppen.
 
 # Stap 6
 
 Nu gaan we de andere data uitlezen, te beginnen met de temperatuur en de min. en max., daarna de luchtdruk, en vervolgend de vochtigheid. We kunnen eigenlijk dezelfde techniek als voor de plaatsnaam etc. gebruiken. Alleen moeten we nu getallen (hele en kommagetallen) uit de JSON halen. de temperatuur is een kommagetal, en je kunt in Java kommagetallen gebruiken als Float of Double. Hier gebruiken we de double, en we moeten dus de "Double waarde" van een specifiek stukje string uit de JSON halen. Dit doe je met Double.valueOf en de de substring en indexOf combinatie, alleen nu zoeken we naar het kopje "temp":
-```java
-double tempKRes = Double.valueOf(antwoord.substring(antwoord.indexOf("temp")+6, antwoord.indexOf(",\"",antwoord.indexOf("temp"))));
-double tempCRes = tempKRes - 273.15;
-```
-Omdat de temperatuur hier in Kelvin (absolute temperatuur) en niet in Celsius gegeven wordt door de OpenWeatherMap api, moeten we er nog 273.15 van de temperatuur aftrekken. We kunnen nu hetzelfde doen voor de minimum ("temp_min") en maximum ("temp_max") temperaturen:
-```java
-double tempKminRes = Double.valueOf(antwoord.substring(antwoord.indexOf("temp_min")+10, antwoord.indexOf(",\"",antwoord.indexOf("temp_min"))));
-double tempCminRes = tempKminRes - 273.15;
 
-double tempKmaxRes = Double.valueOf(antwoord.substring(antwoord.indexOf("temp_max")+10, antwoord.indexOf(",\"",antwoord.indexOf("temp_max"))));
-double tempCmaxRes = tempKmaxRes - 273.15;
+```java
+double tempCRes = Double.valueOf(antwoord.substring(antwoord.indexOf("temp")+6, antwoord.indexOf(",\"",antwoord.indexOf("temp"))));
+```
+We kunnen nu hetzelfde doen voor de minimum ("temp_min") en maximum ("temp_max") temperaturen:
+
+```java
+double tempCminRes = Double.valueOf(antwoord.substring(antwoord.indexOf("temp_min")+10, antwoord.indexOf(",\"",antwoord.indexOf("temp_min"))));
+
+double tempCmaxRes = Double.valueOf(antwoord.substring(antwoord.indexOf("temp_max")+10, antwoord.indexOf(",\"",antwoord.indexOf("temp_max"))));
 ```
 Natuurlijk krijg je hier getallen op 2 decimalen achter de komma en dat is eigenlijk niet per se nodig voor een weerApp.
 En we kunnen dat format vrij eenvoudig aanpassen met de System.out.printf functie. In deze functie geef je eerst het format van de string aan, en dit doe je met codes achter het % teken, en vervolgens geef je de argumenten aan die volgens dat format geprint moeten worden (zie ook: https://www.cs.colostate.edu/~cs160/.Summer16/resources/Java_printf_method_quick_reference.pdf):
+
 ```java
-System.out.printf("Plaats : " + stadRes + " - weertype : " + weerTypeRes + " - beschrijving : " + beschrijvingRes);
+System.out.printf("Plaats : " + plaatsRes + " - Weertype : " + beschrijvingRes);
 System.out.printf("\nTemperatuur : %.1f Min. : %.1f Max. : %.1f graden Celsius", tempCRes, tempCminRes, tempCmaxRes);
 ```
 de %.1f geeft aan dat we 1f floating point number (double of float) na de komma willen hebben. We kunnen ook de luchtdruk (in hPa of mBar) uit het antwoord krijgen. Dit is altijd een integer (geen komma) in deze JSON:
+
 ```java
 int luchtdrukRes = Integer.valueOf(antwoord.substring(antwoord.indexOf("pressure")+10, antwoord.indexOf(",\"",antwoord.indexOf("pressure"))));
 ```

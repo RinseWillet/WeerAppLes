@@ -5,22 +5,19 @@ public class weerDataPrinter {
         String plaatsRes = antwoord.substring(antwoord.indexOf("name")+7, antwoord.indexOf("\",\"",antwoord.indexOf("name")));
 
         //weertype
-        String weerTypeRes = antwoord.substring(antwoord.indexOf("main")+7, antwoord.indexOf("\",\"",antwoord.indexOf("main")));
+//        String weerTypeRes = antwoord.substring(antwoord.indexOf("main")+7, antwoord.indexOf("\",\"",antwoord.indexOf("main")));
 
         //beschrijving
         String beschrijvingRes = antwoord.substring(antwoord.indexOf("description")+14, antwoord.indexOf("\",\"",antwoord.indexOf("description")));
 
         //temperatuur in Celsius
-        double tempKRes = Double.valueOf(antwoord.substring(antwoord.indexOf("temp")+6, antwoord.indexOf(",\"",antwoord.indexOf("temp"))));
-        double tempCRes = tempKRes - 273.15;
+        double tempCRes = Double.valueOf(antwoord.substring(antwoord.indexOf("temp")+6, antwoord.indexOf(",\"",antwoord.indexOf("temp"))));
 
         // min. temperatuur in Celsius extra
-        double tempKminRes = Double.valueOf(antwoord.substring(antwoord.indexOf("temp_min")+10, antwoord.indexOf(",\"",antwoord.indexOf("temp_min"))));
-        double tempCminRes = tempKminRes - 273.15;
+        double tempCminRes = Double.valueOf(antwoord.substring(antwoord.indexOf("temp_min")+10, antwoord.indexOf(",\"",antwoord.indexOf("temp_min"))));
 
         // max. temperatuur in Celsius extra
-        double tempKmaxRes = Double.valueOf(antwoord.substring(antwoord.indexOf("temp_max")+10, antwoord.indexOf(",\"",antwoord.indexOf("temp_max"))));
-        double tempCmaxRes = tempKmaxRes - 273.15;
+        double tempCmaxRes = Double.valueOf(antwoord.substring(antwoord.indexOf("temp_max")+10, antwoord.indexOf(",\"",antwoord.indexOf("temp_max"))));
 
         // luchtdruk in hPa
         int luchtdrukRes = Integer.valueOf(antwoord.substring(antwoord.indexOf("pressure")+10, antwoord.indexOf(",\"",antwoord.indexOf("pressure"))));
@@ -69,7 +66,7 @@ public class weerDataPrinter {
         }
 
         // printen
-        System.out.printf("Plaats : " + plaatsRes + " - weertype : " + weerTypeRes + " - beschrijving : " + beschrijvingRes);
+        System.out.printf("Plaats : " + plaatsRes + " - Weertype : " + beschrijvingRes);
         System.out.printf("\nTemperatuur : %.1f - Min. : %.1f  - Max. : %.1f graden Celsius", tempCRes, tempCminRes, tempCmaxRes);
         System.out.printf("\nLuchtdruk : %4d hPa - Luchtvochtigheid : %3d procent", luchtdrukRes, vochtigheidRes);
         System.out.printf("\nWind : %s %.1f m/s\n", kompasWaarde, windSpeedRes);

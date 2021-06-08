@@ -12,7 +12,6 @@ public class weerData{
     //constructor
     public weerData(URL aanmaken) {
         httpurl = aanmaken;
-        System.out.println("gelukt : " + httpurl);
     }
 
     //methode om API aan te roepen
@@ -45,7 +44,6 @@ public class weerData{
             // Een Stringwriter slaat een characterstroom op in een string buffer, die vervolgens gebruikt kan worden om een string te bouwen
             // als je de write() methode gebruikt met een integer bijv. write(123) dan wordt een character met ASCII characternummer 123 weggeschreven (dat is "{" voor 123)
             antwoordStringWriter.write(leesGetal);
-            System.out.println(antwoordStringWriter);
 
             //zolang er een getal groter dan nul uit de inputstream in de integer 'rint' gezet kan worden, blijf hetvolgende doen
             while (leesGetal > 0) {

@@ -353,8 +353,46 @@ Als allerlaatste kunnen we ook de windgegevens uitladen. We beginnen met de wind
 double windSpeedRes = Double.valueOf(antwoord.substring(antwoord.indexOf("speed")+7, antwoord.indexOf(",\"deg\"")));
 ```
 
-Daarna willen we de windrichting inladen. Deze staat achter "deg" in de JSON en is een integer, het zijn namelijk kompasgraden (van 0 - 359):
+Daarna willen we de windrichting inladen. Deze staat achter "deg" in de JSON en is een integer, het zijn namelijk kompasgraden (van 0 - 359). Maar net zoals bij de luchtvochtigheid, wisselt het 'uiteinde' van de windrichting waarde, en we moeten op dezelfde manier dus gaan checken of na "deg" er 1, 2, of 3 cijfers staan:
 
 ```java
+//windrichting (van graden naar N-Z-O-W) - dit is extra
+    int richtingRes = 0;
+    if (Character.isDigit(antwoord.charAt((antwoord.indexOf("deg") + 7)))) {
+        richtingRes = Integer.valueOf(antwoord.substring(antwoord.indexOf("deg") + 5, antwoord.indexOf("deg") + 8));
+    } else if (Character.isDigit(antwoord.charAt((antwoord.indexOf("deg") + 6))))  {
+        richtingRes = Integer.valueOf(antwoord.substring(antwoord.indexOf("deg") + 5, antwoord.indexOf("deg") + 7));
+    } else {
+        richtingRes = Integer.valueOf(antwoord.substring(antwoord.indexOf("deg") + 5, antwoord.indexOf("deg") + 6));
+    }
+```
+We hebben nu de windrichting in graden, en dat is op zich prima, maar het is natuurlijk nog mooier als je de windrichting zelf kunt weergeven. Daarvoor gaan we een simpel if-statement reeks gebruiken die checkt in welk gedeelte van de cirkel van 360 (bijv. 337-23 = Noord, 22-68 = NoordOost, 157-203 = Zuid, allemaal stukken van 45 graden) de wind komt en daar een letter aan toewijst. We gaan hier met Logical Operators werken voor OR (of - ||) en AND (en - &&):
+
+```java
+String kompasWaarde = "";
+        if ((richtingRes > 337) || (richtingRes < 23)) {
+            kompasWaarde = "N"; // 0 graden
+        } else if ((richtingRes > 22) && (richtingRes < 68)) {
+            kompasWaarde = "NO"; // 45 graden
+        } else if ((richtingRes > 67) && (richtingRes < 113)) {
+            kompasWaarde = "O"; // 90 graden
+        } else if ((richtingRes > 112) && (richtingRes < 158)) {
+            kompasWaarde = "ZO"; // 135 graden
+        } else if ((richtingRes > 157) && (richtingRes < 203)) {
+            kompasWaarde = "Z"; // 180 graden
+        } else if ((richtingRes > 202) && (richtingRes < 248)) {
+            kompasWaarde = "ZW"; //225 graden
+        } else if ((richtingRes > 247) && (richtingRes < 293)) {
+            kompasWaarde = "W"; //270 graden
+        } else if ((richtingRes > 292) && (richtingRes < 338)) {
+            kompasWaarde = "NW"; //315 graden
+        }
 
 ```
+Als allerlaatste willen we de windsnelheid en richting nog netjes uitprinten:
+
+```java
+System.out.printf("\nWind : %s %.1f m/s\n", kompasWaarde, windSpeedRes);
+
+```
+En dan is het een kwestie van de code hier en daar opschonen en dan is de WeerApp in Java klaar!

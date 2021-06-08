@@ -25,7 +25,6 @@ public class Main {
 
         try {
             URL url = new URL("https://api.openweathermap.org/data/2.5/weather?q=" + plaats + "&appid=" + apiKey);
-            System.out.println(url);
             weerData ht = new weerData(url);
             String jsonAntwoord = ht.httpConnect();
 
